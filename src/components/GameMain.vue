@@ -13,13 +13,13 @@
     </div>
     <div>
       <button @click="startGame">Start Game</button>
-      <p>Level: {{ level }}</p>
-      <p>Status: {{ gameStatus }}</p>
+      <p>Уровень: {{ level }}</p>
+      <p>Статус: {{ gameStatus }}</p>
     </div>
     <div>
       Выбрать сложность
       <div v-for="(value,key) in difficulty">
-        {{key}}
+        {{ key }}
         <input type="radio"
                :disabled="gameStatus!=='Not started'"
                :value="value"
@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  name:"GameMain",
+  name: "GameMain",
   data() {
     return {
       buttons: [0, 1, 2, 3],
@@ -42,7 +42,7 @@ export default {
       playerSequence: [],
       activeButton: null,
       level: 1,
-      selectedDifficulty:1000,
+      selectedDifficulty: 1000,
       gameStatus: 'Not started',
       difficulty: {
         'легкий': 1500,
@@ -66,44 +66,43 @@ export default {
           return '';
       }
     },
-    buttonClicked(index) {
-      if (this.gameStatus!=='isPlaying'){
+    async buttonClicked(index) {
+      if (this.gameStatus !== 'Playing') {
         this.activeButton = index;
         this.playSound(index);
         setTimeout(() => {
           this.activeButton = null;
-          console.log('awaiting button clicked')
         }, 300);
         this.playerSequence.push(index);
-        this.checkSequence();
+        await this.checkSequence();
       }
     },
     playSound(index) {
-      const audio = new Audio(require(`@/assets/sounds/${index+1}.mp3`)); // Звуковые файлы от 1 до 4.mp3
+      const audio = new Audio(require(`@/assets/sounds/${index + 1}.mp3`)); // Звуковые файлы от 1 до 4.mp3
       audio.play();
     },
     async startGame() {
       this.sequence = [];
-      console.log('стерт')
       await this.handleSequence()
     },
-    async handleSequence(){
+    async handleSequence() {
       this.gameStatus = 'Playing';
       this.playerSequence = [];
       //мы нашли пидораса, который нам все руинит, когда вернешься, исправь его, а то у тебя очередь дважды заполняется
-      for (let i = this.sequence.length; i < this.level; i++) {
-        const randomIndex = Math.floor(Math.random() * this.buttons.length);
-        this.sequence.push(this.buttons[randomIndex]);
-        console.log('вот тут пидорас')
+      const randomIndex = Math.floor(Math.random() * this.buttons.length);
+      this.sequence.push(this.buttons[randomIndex]);
+      for (let i = 0; i < this.level; i++) {
         await this.playSequence(i);
       }
-      this.gameStatus = 'Listening';
+      setTimeout(()=>{
+        this.gameStatus = 'Listening';
+
+      },this.selectedDifficulty)
     },
     playSequence(i) {
       return new Promise((resolve) => {
         setTimeout(() => {
           this.activeButton = this.sequence[i];
-          console.log(this.sequence,'sequence')
           this.playSound(this.sequence[i]);
           setTimeout(() => {
             this.activeButton = null;
@@ -112,12 +111,12 @@ export default {
         }, this.selectedDifficulty);
       })
     },
-    checkSequence() {
+    async checkSequence() {
       for (let i = 0; i < this.playerSequence.length; i++) {
         if (this.playerSequence[i] !== this.sequence[i]) {
           this.level = 1
           this.sequence = []
-          this.playerSequence= []
+          this.playerSequence = []
           this.gameStatus = 'Game Over';
           return;
         }
@@ -125,9 +124,7 @@ export default {
       if (this.playerSequence.length === this.sequence.length) {
         this.level++;
         this.gameStatus = 'Next Level';
-        setTimeout(() => {
-          this.handleSequence();
-        }, 1000);
+        setTimeout(() =>this.handleSequence(), 1000);
       }
     }
   }
@@ -151,7 +148,7 @@ export default {
 
 .simon-button.active {
   opacity: 1;
-  box-shadow: 1px  2px black;
+  box-shadow: 1px 2px black;
   transition: opacity 0.3s ease-in-out;
 }
 </style>
