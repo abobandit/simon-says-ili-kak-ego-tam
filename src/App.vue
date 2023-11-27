@@ -1,28 +1,53 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+<!--    <HelloWorld/>-->
+    <GameMain/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from "@/components/HelloWorld.vue";
+import GameMain from "@/components/GameMain.vue";
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  name:"App",
+  components: {GameMain, HelloWorld},
+};
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+.simon-board {
+  display: flex;
+  flex-wrap: wrap;
+  width: 300px;
+}
+
+.simon-button {
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.simon-button.active {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.yellow {
+  background-color: yellow;
 }
 </style>
