@@ -83,29 +83,23 @@ export default {
       audio.play();
     },
     async startGame() {
-      this.gameStatus = 'Playing';
       this.sequence = [];
       console.log('стерт')
-      this.playerSequence = [];
-      for (let i = 0; i < this.level; i++) {
-        const randomIndex = Math.floor(Math.random() * this.buttons.length);
-        this.sequence.push(this.buttons[randomIndex]);
-        await this.playSequence(i);
-      }
-      this.gameStatus = 'Listening';
+      await this.handleSequence()
     },
     async handleSequence(){
       this.gameStatus = 'Playing';
       this.playerSequence = [];
-      for (let i = 0; i < this.level; i++) {
+      //мы нашли пидораса, который нам все руинит, когда вернешься, исправь его, а то у тебя очередь дважды заполняется
+      for (let i = this.sequence.length; i < this.level; i++) {
         const randomIndex = Math.floor(Math.random() * this.buttons.length);
         this.sequence.push(this.buttons[randomIndex]);
+        console.log('вот тут пидорас')
         await this.playSequence(i);
       }
       this.gameStatus = 'Listening';
     },
     playSequence(i) {
-      console.log(this.sequence)
       return new Promise((resolve) => {
         setTimeout(() => {
           this.activeButton = this.sequence[i];
@@ -114,7 +108,6 @@ export default {
           setTimeout(() => {
             this.activeButton = null;
             resolve();
-            console.log(i,'playSequence')
           }, this.selectedDifficulty);
         }, this.selectedDifficulty);
       })
@@ -122,6 +115,9 @@ export default {
     checkSequence() {
       for (let i = 0; i < this.playerSequence.length; i++) {
         if (this.playerSequence[i] !== this.sequence[i]) {
+          this.level = 1
+          this.sequence = []
+          this.playerSequence= []
           this.gameStatus = 'Game Over';
           return;
         }
@@ -130,7 +126,7 @@ export default {
         this.level++;
         this.gameStatus = 'Next Level';
         setTimeout(() => {
-          this.startGame();
+          this.handleSequence();
         }, 1000);
       }
     }
