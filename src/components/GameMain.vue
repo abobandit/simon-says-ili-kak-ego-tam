@@ -49,66 +49,64 @@ export default {
         'нормальный': 1000,
         'сложный': 400
       }
-    };
+    }
   },
   methods: {
     getColor(index) {
       switch (index) {
         case 0:
-          return 'background: blue';
+          return 'background: blue'
         case 1:
-          return 'background: red';
+          return 'background: red'
         case 2:
-          return 'background: green';
+          return 'background: green'
         case 3:
-          return 'background: yellow';
+          return 'background: yellow'
         default:
-          return '';
+          return ''
       }
     },
     async buttonClicked(index) {
       if (this.gameStatus !== 'Playing') {
-        this.activeButton = index;
-        this.playSound(index);
+        this.activeButton = index
+        this.playSound(index)
         setTimeout(() => {
-          this.activeButton = null;
-        }, 300);
-        this.playerSequence.push(index);
-        await this.checkSequence();
+          this.activeButton = null
+        }, 300)
+        this.playerSequence.push(index)
+        await this.checkSequence()
       }
     },
     playSound(index) {
-      const audio = new Audio(require(`@/assets/sounds/${index + 1}.mp3`)); // Звуковые файлы от 1 до 4.mp3
-      audio.play();
+      const audio = new Audio(require(`@/assets/sounds/${index + 1}.mp3`))
+      audio.play()
     },
     async startGame() {
-      this.sequence = [];
+      this.sequence = []
       await this.handleSequence()
     },
     async handleSequence() {
       this.gameStatus = 'Playing';
-      this.playerSequence = [];
-      //мы нашли пидораса, который нам все руинит, когда вернешься, исправь его, а то у тебя очередь дважды заполняется
-      const randomIndex = Math.floor(Math.random() * this.buttons.length);
-      this.sequence.push(this.buttons[randomIndex]);
+      this.playerSequence = []
+      const randomIndex = Math.floor(Math.random() * this.buttons.length)
+      this.sequence.push(this.buttons[randomIndex])
       for (let i = 0; i < this.level; i++) {
-        await this.playSequence(i);
+        await this.playSequence(i)
       }
       setTimeout(()=>{
         this.gameStatus = 'Listening';
-
       },this.selectedDifficulty)
     },
     playSequence(i) {
       return new Promise((resolve) => {
         setTimeout(() => {
-          this.activeButton = this.sequence[i];
-          this.playSound(this.sequence[i]);
+          this.activeButton = this.sequence[i]
+          this.playSound(this.sequence[i])
           setTimeout(() => {
-            this.activeButton = null;
-            resolve();
-          }, this.selectedDifficulty);
-        }, this.selectedDifficulty);
+            this.activeButton = null
+            resolve()
+          }, this.selectedDifficulty)
+        }, this.selectedDifficulty)
       })
     },
     async checkSequence() {
@@ -117,14 +115,14 @@ export default {
           this.level = 1
           this.sequence = []
           this.playerSequence = []
-          this.gameStatus = 'Game Over';
+          this.gameStatus = 'Game Over'
           return;
         }
       }
       if (this.playerSequence.length === this.sequence.length) {
-        this.level++;
-        this.gameStatus = 'Next Level';
-        setTimeout(() =>this.handleSequence(), 1000);
+        this.level++
+        this.gameStatus = 'Next Level'
+        setTimeout(() =>this.handleSequence(), 1000)
       }
     }
   }
